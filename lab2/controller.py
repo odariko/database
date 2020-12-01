@@ -117,3 +117,43 @@ def column_data(con, table_name, column_name):
         except(Exception, psycopg2.DatabaseError) as error:
             print(error)
 
+def add_row1(self, table_name, fields_name):
+        i, y = '', ''
+        values = ''
+        for el in fields_name.keys():
+            i += el + ','
+            y += '%s,'
+            values += "'{}',".format(fields_name[el])
+        table = 'INSERT INTO public."{}"({}) VALUES({});'.format(table_name, i[:len(i) - 1], y[:len(y) - 1])
+        try:
+            cur_execute = """cur.execute(table, ({}))""".format(values[:len(values) - 1])
+            cur = self.connection.cursor()
+            exec(cur_execute)
+            self.connection.commit()
+            return True
+        except(Exception, psycopg2.DatabaseError) as error:
+            print(error)
+            print("Try again")
+            self.add_row(input(), {input(): input(), input(): input()})
+
+def del_row1(self, table_name, key, value):
+        try:
+            cur = self.connection.cursor()
+            cur.execute("DELETE FROM {} WHERE {} = %s".format(table_name, key), (value,))
+            rows_deleted = cur.rowcount
+            self.connection.commit()
+            return True
+        except(Exception, psycopg2.DatabaseError) as error:
+            print(error)
+            return False
+
+def edit_value1(self, table_name, key, key_change, new_val, key_val):
+        try:
+            cur = self.connection.cursor()
+            cur.execute("UPDATE {} Set {} = %s WHERE {} = %s;".format(table_name, key_change, key), (new_val, key_val))
+            updated_rows = cur.rowcount
+            self.connection.commit()
+            return True
+        except(Exception, psycopg2.DatabaseError) as error:
+            print(error)
+            return False
